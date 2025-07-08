@@ -37,7 +37,7 @@ DeviceNetworkEvents
 | summarize ConnectionCount = count() by DeviceName, ActionType, LocalIP
 | order by ConnectionCount
 ```
-### 2. Confirming the Port Scan
+#### 2. Confirming the Port Scan
 After observing the failed connections, this query was used to examine the specific traffic and confirm that a sequential port scan was occurring.
 
 ```kql
@@ -52,7 +52,7 @@ DeviceNetworkEvents
 | sort by Timestamp asc
 ```
 
-### 3. Identifying the Malicious Process
+#### 3. Identifying the Malicious Process
 Once the port scan was confirmed, this final query was used to pivot to the process events on the host to identify which script or program launched the attack.
 
 ```kql
