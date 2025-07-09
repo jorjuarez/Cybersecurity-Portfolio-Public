@@ -65,6 +65,39 @@ DeviceProcessEvents
 | project Timestamp, ActionType, FileName, ProcessCommandline, AccountName, InitiatingProcessAccountName, InitiatingProcessParentFileName
 | sort by Timestamp asc
 ```
+#### 4.`portscan.ps1` found in device `newwindows10`
+
+```powershell
+# Define the log file path
+$logFile = "C:\ProgramData\entropy-gorilla.log"
+$scriptName = "portscan.ps1"
+
+# Function to log messages
+function Log-Message {
+    param (
+        [string]$Message,
+        [string]$Level = "INFO"
+    )
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $LogEntry = "$Timestamp [$Level] [$scriptName] $Message"
+    Add-Content -Path $logFile -Value $LogEntry
+}
+
+# Define the range of IP addresses to scan
+$startIP = 4
+$endIP = 10
+$baseIP = "10.0.0."
+
+# Expanded list of common ports (well-known port numbers 0-1023 + some higher)
+$commonPorts = @(21, 22, 23, 25, 53, 69, 80, 110, 123, 135, 137, 138, 139, 143, 161, 194, 443, 445, 465, 587, 993, 995, 3306, 3389, 5900, 8080, 8443)
+
+# Log the start of the scan
+Log-Message "Starting port scan on IP range $baseIP$startIP to $baseIP$endIP."
+
+# Function to test a single IP and all its common ports
+function Test-Ports {
+    param (
+```
 ---
 
 ## Created By:
