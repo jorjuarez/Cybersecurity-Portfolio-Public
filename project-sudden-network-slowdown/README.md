@@ -1,6 +1,6 @@
 # Threat Hunt: Sudden Network Slowdown
 
-### Phase 1: Simulating the Trigger Event
+### Simulating the Trigger Event
 
 To begin this threat hunt, it was necessary to simulate suspicious network activity that would be logged by a security monitoring platform. The goal was to mimic the reconnaissance phase of an attack, specifically a network-wide port scan, which is a common cause of network degradation and a frequent trigger for a security investigation.
 
@@ -98,6 +98,15 @@ Log-Message "Starting port scan on IP range $baseIP$startIP to $baseIP$endIP."
 function Test-Ports {
     param (
 ```
+---
+
+#### 5.MITRE ATT&CK® TTPs Identified
+
+| Tactic        | Technique / Sub-technique                      | ID        | Description in this Hunt                                                                                                    |
+|---------------|------------------------------------------------|-----------|-----------------------------------------------------------------------------------------------------------------------------|
+| Reconnaissance| Network Service Scanning                       | T1046     | The host `nemwindows10` performed sequential port scans against another host, confirmed by the high volume of failed connection logs. |
+| Execution     | Command and Scripting Interpreter: PowerShell  | T1059.001 | The `portscan.ps1` script was executed via PowerShell to initiate the reconnaissance activity on the network.               |
+
 ---
 
 ## Created By:
