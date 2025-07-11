@@ -113,7 +113,7 @@ DeviceNetworkEvents
 
 ## Created By:
 - **Author Name**: Jorge Juarez
-- **Code creator**: [Josh Madakor](https://joshmadakor.tech/)
+- **PowerShell script creator**: [Josh Madakor](https://joshmadakor.tech/)
 - **Author Contact**: https://www.linkedin.com/in/jorgejuarez1/
 - **Date**: May 8, 2025
 
