@@ -110,3 +110,27 @@ DeviceNetworkEvents
 | project Timestamp, ActionType, LocalIP, RemoteUrl, RemoteIP, InitiatingProcessAccountName, InitiatingProcessFileName, InitiatingProcessCommandLine
 | sort by Timestamp asc
 ```
+
+## Created By:
+- **Author Name**: Jorge Juarez
+- **Code creator**: Josh Madakor https://joshmadakor.tech/
+- **Author Contact**: https://www.linkedin.com/in/jorgejuarez1/
+- **Date**: May 8, 2025
+
+## Validated By:
+- **Reviewer Name**: 
+- **Reviewer Contact**: 
+- **Validation Date**: 
+
+---
+
+## Additional Notes:
+- **None**
+
+---
+
+## Revision History:
+| **Version** | **Changes**                   | **Date**         | **Modified By**   |
+|-------------|-------------------------------|------------------|-------------------|
+| 1.0         | Initial draft                  | `July 8, 2025`  | `Jorge Juarez`   
+
