@@ -112,3 +112,24 @@ Query Result:
 | May 10, 2025 11:13:26 PM| FileRenamed | 6642_CompanyFinancials_pwncrypt.csv      | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
 | May 10, 2025 11:13:26 PM| FileRenamed | 8762_ProjectList_pwncrypt.csv            | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
 | May 10, 2025 11:13:26 PM| FileRenamed | 8357_EmployeeRecords_pwncrypt.csv        | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+
+### MITRE ATT&CK Framework
+
+* **Command and Control** (`TA0011`):
+    * **Payload Delivery:** `pwncrypt.ps1` was downloaded from an external GitHub URL using PowerShell's `Invoke-WebRequest` (aligns with `T1105` - Ingress Tool Transfer, leveraging `T1071.001` - Application Layer Protocol: Web Protocols).
+
+* **Execution** (`TA0002`):
+    * **PowerShell Scripting:** The core malware `pwncrypt.ps1` was executed via `powershell.exe` (`T1059.001` - Command and Scripting Interpreter: PowerShell).
+    * **Command Shell Invocation:** `cmd.exe` was used to launch the PowerShell process that ran `pwncrypt.ps1` (`T1059.003` - Command and Scripting Interpreter: Windows Command Shell).
+
+* **Defense Evasion** (`TA0005`):
+    * **Execution Policy Bypass:** The script was run with `powershell.exe -ExecutionPolicy Bypass` to circumvent script execution restrictions (a common aspect of abusing `T1059.001` - PowerShell for defense evasion).
+
+* **Privilege Escalation** (`TA0004`):
+    * **Indicated Capability:** Later file encryption activity was observed under the `SYSTEM` account, and VirusTotal associated this tactic with the malware's hash, suggesting `pwncrypt.ps1` has or attempts privilege escalation. (The specific technique used by `pwncrypt.ps1` for this wasn't detailed in the provided logs).
+
+* **Discovery** (`TA0007`):
+    * **File & Directory Discovery:** The script enumerated user files and directories to identify targets for encryption (aligns with `T1083` - File and Directory Discovery).
+
+* **Impact** (`TA0040`):
+    * **Data Encrypted for Impact:** Files were encrypted, renamed (e.g., with `_pwncrypt.csv` suffix), and ransom/decryption instructions were generated (`T1486`).
