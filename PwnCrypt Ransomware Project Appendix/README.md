@@ -142,7 +142,7 @@ DeviceFileEvents
     * **Data Encrypted for Impact:** Files were encrypted, renamed (e.g., with `_pwncrypt.csv` suffix), and ransom/decryption instructions were generated (`T1486`).
  
     * ## Created By:
-- **Author Name**: Jorge Juarez
+- **Author Name**: [Jorge Juarez](https://www.linkedin.com/in/jorgejuarez1/)
 - **PowerShell script creator**: [Josh Madakor](https://joshmadakor.tech/)
 - **Author Contact**: https://www.linkedin.com/in/jorgejuarez1/
 - **Date**: May 10, 2025
